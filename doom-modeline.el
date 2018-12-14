@@ -238,6 +238,10 @@ It returns a file name which can be used directly as argument of
   "Doom mode-line faces."
   :group 'faces)
 
+(defface doom-modeline-buffer-project
+  '((t (:inherit font-lock-string-face)))
+  "Face used for the filename part of the mode-line buffer path.")
+
 (defface doom-modeline-buffer-path
   '((t (:inherit (mode-line-emphasis bold))))
   "Face used for the dirname part of the buffer path.")
@@ -686,8 +690,8 @@ Example:
   (let ((project-root (doom-modeline-project-root))
         (active (doom-modeline--active))
         (modified-faces (if (buffer-modified-p) 'doom-modeline-buffer-modified)))
-    (let ((sp-faces       (or modified-faces (if active 'font-lock-comment-face)))
-          (project-faces  (or modified-faces (if active 'font-lock-string-face)))
+    (let ((sp-faces       (or modified-faces (if active 'doom-modeline-project-root-dir)))
+          (project-faces  (or modified-faces (if active 'doom-modeline-buffer-project)))
           (relative-faces (or modified-faces (if active 'doom-modeline-buffer-path)))
           (file-faces     (or modified-faces (if active 'doom-modeline-buffer-file))))
       (let ((sp-props       `(,@(if sp-faces       `(:inherit ,sp-faces))      ,@(if active '(:weight bold))))
@@ -982,7 +986,7 @@ mouse-1: Display minor modes menu"
                   (all-the-icons-default-adjust -0.1))
               (concat "  "
                       (cond ((memq state '(edited added))
-                             (if active (setq face 'doom-modeline-info))
+                             (if active (setq face 'doom-modeline-warning))
                              (doom-modeline-icon-octicon
                               "git-compare"
                               :face face
@@ -1047,10 +1051,10 @@ Uses `all-the-icons-material' to fetch the icon."
                                                            (if .error 'doom-modeline-urgent 'doom-modeline-warning)
                                                            -0.225)))
                         (doom-modeline-flycheck-icon "check" nil 'doom-modeline-info)))
-           (`running     (doom-modeline-flycheck-icon "access_time" nil 'font-lock-doc-face -0.225))
-           (`no-checker  (doom-modeline-flycheck-icon "sim_card_alert" "-" 'font-lock-doc-face))
+           (`running     (doom-modeline-flycheck-icon "access_time" nil 'doom-modeline-warning -0.225))
+           (`no-checker  (doom-modeline-flycheck-icon "sim_card_alert" "-" 'doom-modeline-info))
            (`errored     (doom-modeline-flycheck-icon "sim_card_alert" "Error" 'doom-modeline-urgent))
-           (`interrupted (doom-modeline-flycheck-icon "pause" "Interrupted" 'font-lock-doc-face))
+           (`interrupted (doom-modeline-flycheck-icon "pause" "Interrupted" 'doom-modeline-warning))
            (`suspicious  (doom-modeline-flycheck-icon "priority_high" "Suspicious" 'doom-modeline-urgent))
            (_ (if vc-mode " " "  ")))
          'help-echo (pcase status
